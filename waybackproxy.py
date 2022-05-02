@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import base64, datetime, json, lrudict, re, socket, socketserver, sys, threading, urllib.request, urllib.error, urllib.parse
+DATE_TOLERANCE = 730
 from config import *
 
 # internal LRU dictionary for preserving URLs on redirect
@@ -110,7 +111,7 @@ class Handler(socketserver.BaseRequestHandler):
 					# required for QUICK_IMAGES
 					archived_url = '/'.join(request_url.split('/')[5:])
 					_print('[>] [QI] {0}'.format(archived_url))
-			elif GEOCITIES_FIX and hostname == 'www.geocities.com':
+			elif GEOCITIES_FIX and hostname == 'www.geocities.com' or hostname == 'www.oocities.org':
 				# apply GEOCITIES_FIX and pass it through
 				_print('[>] {0}'.format(archived_url))
 
@@ -430,7 +431,7 @@ class Handler(socketserver.BaseRequestHandler):
 	def handle_settings(self, query):
 		"""Generate the settings page."""
 	
-		global DATE, GEOCITIES_FIX, QUICK_IMAGES, CONTENT_TYPE_ENCODING
+		global DATE, DATE_TOLERANCE, GEOCITIES_FIX, QUICK_IMAGES, CONTENT_TYPE_ENCODING
 		
 		if query != '': # handle any parameters that may have been sent
 			parsed = urllib.parse.parse_qs(query)
@@ -453,7 +454,7 @@ class Handler(socketserver.BaseRequestHandler):
 		settingspage += '<p>Date to get pages from: <input type="text" name="date" size="8" value="'
 		settingspage += DATE
 		settingspage += '"><p>Date tolerance: <input type="text" name="dateTolerance" size="8" value="'
-		settingspage += DATE_TOLERANCE
+		settingspage += str(DATE_TOLERANCE)
 		settingspage += '"> days<br><input type="checkbox" name="gcFix"'
 		if GEOCITIES_FIX: settingspage += ' checked'
 		settingspage += '> Geocities Fix<br><input type="checkbox" name="quickImages"'
