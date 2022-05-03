@@ -227,7 +227,7 @@ class Handler(socketserver.BaseRequestHandler):
 				match = re.search('''//web\.archive\.org/web/([0-9]+)''', conn.geturl())
 				if match:
 					requested_date = match.group(1)
-					if self.wayback_to_datetime(requested_date) > self.wayback_to_datetime(original_date) + datetime.timedelta(DATE_TOLERANCE):
+					if self.wayback_to_datetime(requested_date) > self.wayback_to_datetime(original_date) + datetime.timedelta(int(DATE_TOLERANCE)):
 						_print('[!]', requested_date, 'is outside the configured tolerance of', DATE_TOLERANCE, 'days')
 						conn.close()
 						return self.error_page(http_version, 412, 'Snapshot ' + requested_date + ' not available')
